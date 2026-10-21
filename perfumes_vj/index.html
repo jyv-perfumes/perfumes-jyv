@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JyV Perfumes ✨</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- Tu archivo CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- CONTENEDOR AUTOMÁTICO DE DECORACIONES DE FONDO (Se llena solo desde JS con decor1.png, decor2.png, etc.) -->
+    <div id="bg-decorations-container"></div>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top p-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <!-- 👇 LUGAR 1 PARA EL LOGO (Barra superior) -->
+                <img src="assets/img/logo.png" alt="Logo JyV" class="nav-logo me-3" 
+                     onerror="if(this.src.includes('logo.png')) this.src='assets/img/logo_vj.jpeg'; else if(this.src.includes('logo_vj.jpeg')) this.src='assets/img/logo.jpeg'; else this.style.display='none';">
+                <span class="brand-title">JyV</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center" id="category-filters">
+                    <li class="nav-item"><a class="nav-link active" href="#" onclick="filterProducts('todos', event)">Todos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="filterProducts('femeninos', event)">Femeninos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="filterProducts('masculinos', event)">Masculinos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="filterProducts('unisex', event)">Unisex</a></li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link nav-link-admin" id="admin-btn-nav" href="#" onclick="openAdminLogin(event)">🔒 Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ENCABEZADO PRINCIPAL CON MEDALLÓN PARA EL LOGO -->
+    <header class="hero-section text-center py-5">
+        <div class="container position-relative">
+            <!-- 👇 LUGAR 2 PRINCIPAL PARA TU LOGO OFICIAL -->
+            <div class="logo-showcase mx-auto mb-3">
+                <img src="assets/img/logo.png" alt="JyV Logo Oficial" class="hero-logo" 
+                     onerror="if(this.src.includes('logo.png')) this.src='assets/img/logo_vj.jpeg'; else if(this.src.includes('logo_vj.jpeg')) this.src='assets/img/logo.jpeg'; else this.style.display='none';">
+            </div>
+            <h1 class="brand-hero-title">JyV Perfumes</h1>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="container my-5 position-relative" style="z-index: 2;">
+        
+        <!-- PANEL DE CARGA DE PERFUMES (Oculto por defecto) -->
+        <div id="admin-section" class="admin-panel rounded-4 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+                <h3 class="m-0 text-white"> Panel de Carga JyV</h3>
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="logoutAdmin()">Cerrar Sesión</button>
+            </div>
+            <form id="product-form" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-light">Nombre del Perfume</label>
+                    <input type="text" class="form-control custom-input" id="nombre" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-light">Tamaño (ml)</label>
+                    <input type="text" class="form-control custom-input" id="mililitros" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-light">Precio ($)</label>
+                    <input type="number" class="form-control custom-input" id="precio" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-light">Categoría</label>
+                    <select id="categoria" class="form-select custom-input">
+                        <option value="femeninos">Femenino</option>
+                        <option value="masculinos">Masculino</option>
+                        <option value="unisex">Unisex</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold text-light">Foto del Perfume</label>
+                    <input type="file" class="form-control custom-input" id="foto-file" accept="image/*" required>
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label fw-semibold text-light">Descripción / Notas Olfativas</label>
+                    <textarea class="form-control custom-input" id="descripcion" rows="2" required></textarea>
+                </div>
+                <div class="col-12 text-end mt-4">
+                    <button type="submit" id="submit-btn" class="btn btn-calm px-5 py-2">Publicar Perfume</button>
+                    <div id="loading-msg" class="text-light mt-2 small" style="display:none;">Subiendo imagen y guardando...</div>
+                </div>
+            </form>
+        </div>
+
+        <!-- GRILLA DE PERFUMES -->
+        <div id="products-container" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+    </div>
+
+    <!-- MODAL DE LOGIN SEGURO (Sin pistas ni autocompletado) -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content login-modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white">Acceso Privado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form" autocomplete="off">
+                        <div class="mb-3">
+                            <label class="form-label text-light small">Usuario</label>
+                            <input type="text" id="admin-user" class="form-control custom-input" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small">Contraseña</label>
+                            <input type="password" id="admin-pass" class="form-control custom-input" autocomplete="new-password" required>
+                        </div>
+                        <div id="login-error" class="text-danger small mb-2 fw-semibold" style="display: none;">Credenciales inválidas 🚫</div>
+                        <button type="submit" class="btn btn-calm w-100 mt-2">Verificar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA VER IMAGEN EN GRANDE -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background: transparent; border: none;">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" style="z-index: 10; background-color: rgba(0,0,0,0.75); padding: 0.6rem; border-radius: 50%;"></button>
+                    <img src="" id="modalImage" class="img-fluid shadow-lg" alt="Vista completa">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Tu archivo JS -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
